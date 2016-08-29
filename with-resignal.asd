@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :with-resignal
   :in-order-to((test-op(test-op :with-resignal-test)))
-  :depends-on (:closer-mop)
+  :depends-on (:closer-mop :nitch-util)
   :components ((:file "with-resignal")))
 
 (defsystem :with-resignal-test

@@ -1,16 +1,11 @@
 (in-package :cl-user)
 (defpackage :with-resignal(:use :cl)
+  (:import-from :nitch-util.doc #:doc)
   (:export
     ;;;; main api
     #:with-resignal
     ))
 (in-package :with-resignal)
-
-(eval-when(:compile-toplevel :load-toplevel)
-  (defun doc(system namestring)
-    (uiop:read-file-string
-      (uiop:subpathname(asdf:system-source-directory(asdf:find-system system))
-	namestring))))
 
 (defmacro with-resignal(binds &body body)
   #.(doc :with-resignal "with-resignal.M.md")
