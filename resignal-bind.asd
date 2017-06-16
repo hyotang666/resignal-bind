@@ -4,7 +4,7 @@
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname "README.md" *load-pathname*))
-  :author "Shinich Sato"
+  :author "Shinichi Sato"
   :depends-on (:closer-mop)
   :components ((:file "resignal-bind")))
 
