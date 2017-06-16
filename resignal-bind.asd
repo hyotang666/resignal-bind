@@ -3,7 +3,7 @@
 (defsystem :resignal-bind
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
-                        (uiop:subpathname "README.md" *load-pathname*))
+                        (uiop:subpathname *load-pathname* "README.md"))
   :author "Shinichi Sato"
   :depends-on (:closer-mop)
   :components ((:file "resignal-bind")))
