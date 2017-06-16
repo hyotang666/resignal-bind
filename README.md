@@ -1,13 +1,13 @@
-# WITH-RESIGNAL - Tiny signal capturing facility
+# RESIGNAL-BIND - Tiny signal capturing facility
 
-* Current lisp world
+### Current lisp world
 Condition system is very strong.
 
-* Issues
+### Issues
 Although error message is not user friendly.
 
-* Propose
-with-resignal captures condition in order to make more better error message.
+### Proposal
+resignal-bind captures condition in order to make more better error message.
 
 ## Usage
 
@@ -41,7 +41,7 @@ with-resignal captures condition in order to make more better error message.
 ;; for example,
 (defun enstrings(list)
   (labels((rec(seq &optional acc)
-	    (if(with-resignal((error()'simple-error
+	    (if(resignal-bind((error()'simple-error
 				   :format-control "~S: Accepts only proper list, but ~S"
 				   :format-arguments (list 'enstrings list)))
 		 (endp seq))
@@ -54,11 +54,11 @@ with-resignal captures condition in order to make more better error message.
 => ERROR
 ENSTRINGS: Accepts only proper list, but (1 2 . 3)
 
-;; TIPS! - If you feel with-resignal in the source code is annoying to read,
+;; TIPS! - If you feel resignal-bind in the source code is annoying to read,
 ;;         MACROLET allows you to more pretty source code.
 ;; e.g.
 (macrolet((!(form)
-	    `(with-resignal((ERROR()'SIMPLE-ERROR
+	    `(resignal-bind((ERROR()'SIMPLE-ERROR
 				 :FORMAT-CONTROL "~S: Accepts only proper list, but ~S"
 				 :FORMAT-ARGUMENTS(LIST 'ENSTRINGS LIST)))
 	       ,form)))
@@ -70,14 +70,17 @@ ENSTRINGS: Accepts only proper list, but (1 2 . 3)
 		(rec(cdr seq)(push(princ-to-string(car seq))acc)))))
       (rec list))))
 
-;; Why don't you use with-resignal at refactoring stage.
+;; Why don't you use resignal-bind at refactoring stage.
 ```
 
 ## From developer
 
-* Product's goal - maybe already
-* License - MIT
-* Supported implementation
+### Product's goal
+Maybe already
+### License
+MIT
+### Supported implementation
 developed with CLISP.
+
 Tested with CCL, ECL, SBCL.
 
