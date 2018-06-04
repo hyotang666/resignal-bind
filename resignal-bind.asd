@@ -8,6 +8,5 @@
   :depends-on (:closer-mop)
   :components ((:file "resignal-bind")))
 
-;; Perform method below is added by JINGOH.GENERATOR.
-(defmethod perform ((o test-op) (c (eql (find-system "resignal-bind"))))
- (test-system :resignal-bind.test))
+(defmethod component-depends-on ((o test-op) (c (eql (find-system "resignal-bind"))))
+  (append (call-next-method)'((test-op "resignal-bind.test"))))
