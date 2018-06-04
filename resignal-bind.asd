@@ -5,7 +5,10 @@
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
   :author "Shinichi Sato"
-  :depends-on (:closer-mop)
+  :depends-on
+  (
+   "closer-mop" ; wrapper for meta object protocols.
+   )
   :components ((:file "resignal-bind")))
 
 (defmethod component-depends-on ((o test-op) (c (eql (find-system "resignal-bind"))))
