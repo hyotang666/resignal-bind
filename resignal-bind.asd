@@ -5,6 +5,7 @@
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
   :author "Shinichi Sato"
+  :licence "MIT"
   :depends-on
   (
    "closer-mop" ; wrapper for meta object protocols.
