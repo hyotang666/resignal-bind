@@ -79,8 +79,7 @@ ENSTRINGS: Accepts only proper list, but (1 2 . 3)
 Maybe already
 ### License
 MIT
-### Supported implementation
-developed with CLISP.
-
-Tested with CCL, ECL, SBCL.
+### Tested
+CCL/1.11.5
+SBCL/1.4.15
 
