@@ -81,5 +81,5 @@ Maybe already
 MIT
 ### Tested
 CCL/1.11.5
-SBCL/1.4.15
+SBCL/1.5.1
 
