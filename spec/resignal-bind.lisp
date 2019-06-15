@@ -43,8 +43,9 @@ WARNING "
 
 #?(with-output-to-string(*error-output*)
      (warn "foo"))
-:satisfies #`(& (stringp $result)
-		(< 0 (length $result)))
+:satisfies (lambda($result)
+	     (& (stringp $result)
+		(< 0 (length $result))))
 ,:ignore-signals warning
 
 ;; NOTE!
@@ -81,8 +82,9 @@ WARNING "
 #?(with-output-to-string(*error-output*)
     (resignal-bind((warning()'warning))
       (signal 'warning)))
-:satisfies #`(& (stringp $result)
-		(< 0 (length $result)))
+:satisfies (lambda($result)
+	     (& (stringp $result)
+		(< 0 (length $result))))
 , :ignore-signals warning
 
 ; Purpose is making better error message.

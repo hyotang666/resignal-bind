@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :resignal-bind
-  :version "0.0.1"
+  :version "0.0.2"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
