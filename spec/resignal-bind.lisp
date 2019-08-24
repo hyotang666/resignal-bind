@@ -63,7 +63,7 @@ WARNING "
 #?(error 'warning) :signals warning
 #?(error 'warning) :invokes-debugger warning
 
-(requirements-about resignal-bind)
+(requirements-about resignal-bind :doc-type function)
 
 ;;;; Description:
 ; capturing condition.
