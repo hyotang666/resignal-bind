@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :resignal-bind
-  :version "0.0.3"
+  :version "0.0.4"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
@@ -37,7 +37,8 @@
       (declare (special args))
       (call-next-method))))
 (let ((system (find-system "jingoh.documentizer" nil)))
-  (when system
+  (when(and system
+            (not(featurep :clisp)))
     (load-system system)
     (defmethod operate :around
                ((o load-op) (c (eql (find-system "resignal-bind"))) &key)
