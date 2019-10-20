@@ -63,6 +63,18 @@ WARNING "
 #?(error 'warning) :signals warning
 #?(error 'warning) :invokes-debugger warning
 
+;;; CL:HANDLER-BIND
+;; NOTE!
+; CLHS say "type -- a type specifier", not limited only condition.
+#?(handler-bind((integer #'print))
+    (concatenate 'string
+		 "above"
+		 "integer"
+		 "is"
+		 "valid"))
+=> "aboveintegerisvalid"
+,:test equal
+
 (requirements-about resignal-bind :doc-type function)
 
 ;;;; Description:
