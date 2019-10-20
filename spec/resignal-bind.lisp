@@ -9,8 +9,18 @@
 ; do only signaling.
 #?(signal 'warning) :signals warning
 #?(signal 'error) :signals error
+; CLHS say "If the condition is not handled, signal returns nil."
 #-ecl
 #?(signal 'error) :invokes-debugger NOT
+; NOTE!
+; CLHS never say no handlers in top level.
+; ECL has serious-condition handler in top level.
+#+ecl
+#?(signal 'error) :invokes-debugger error
+#+ecl
+#?(signal 'serious-condition) :invokes-debugger serious-condition
+#+ecl
+#?(signal 'condition) => NIL
 
 ;;; Condition handler
 ; When handler is found call it.
@@ -86,7 +96,6 @@ WARNING "
 
 ;; NOTE!
 ; Just SIGNALING condition become invoking debugger.
-#-ecl
 #?(resignal-bind((error()'program-error))
     (signal 'error))
 :invokes-debugger program-error
@@ -108,7 +117,6 @@ WARNING "
 
 ; it is invalid that downgrade error to warning,
 ; but upgrade warning to error.
-#-ecl
 #?(resignal-bind((warning()'program-error))
     (warn 'warning))
 :invokes-debugger program-error
