@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :resignal-bind
-  :version "0.0.4"
+  :version "0.0.5"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
@@ -13,11 +13,14 @@
    )
   :components ((:file "resignal-bind")))
 
-;; These forms below are added by JINGOH.GENERATOR.
+;;; These forms below are added by JINGOH.GENERATOR.
+;; Ensure in ASDF for pretty printings.
 (in-package :asdf)
+;; Enable testing via (asdf:test-system :system-name).
 (defmethod component-depends-on
            ((o test-op) (c (eql (find-system "resignal-bind"))))
   (append (call-next-method) '((test-op "resignal-bind.test"))))
+;; Enable passing parameter for JINGOH:EXAMINER via ASDF:TEST-SYSTEM.
 (defmethod operate :around
            ((o test-op) (c (eql (find-system "resignal-bind")))
             &rest keys
@@ -36,21 +39,26 @@
     (let ((args (jingoh.args keys)))
       (declare (special args))
       (call-next-method))))
+;; Documentation importer.
 (let ((system (find-system "jingoh.documentizer" nil)))
-  (when(and system
-            (not(featurep :clisp)))
+  (when (and system (not (featurep :clisp)))
     (load-system system)
     (defmethod operate :around
                ((o load-op) (c (eql (find-system "resignal-bind"))) &key)
-      (let* ((forms nil)
+      (let* ((seen nil)
+             (*default-pathname-defaults*
+              (merge-pathnames "spec/" (system-source-directory c)))
              (*macroexpand-hook*
               (let ((outer-hook *macroexpand-hook*))
                 (lambda (expander form env)
-                  (when (typep form '(cons (eql defpackage) *))
-                    (push form forms))
-                  (funcall outer-hook expander form env))))
-             (*default-pathname-defaults*
-              (merge-pathnames "spec/" (system-source-directory c))))
-        (multiple-value-prog1 (call-next-method)
-          (mapc (find-symbol (string :importer) :jingoh.documentizer)
-                forms))))))
+                  (if (not (typep form '(cons (eql defpackage) *)))
+                      (funcall outer-hook expander form env)
+                      (if (find (cadr form) seen :test #'string=)
+                          (funcall outer-hook expander form env)
+                          (progn
+                           (push (cadr form) seen)
+                           `(progn
+                             ,form
+                             ,@(symbol-call :jingoh.documentizer :importer
+                                            form)))))))))
+        (call-next-method)))))
