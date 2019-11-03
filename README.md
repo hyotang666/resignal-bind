@@ -81,5 +81,6 @@ Maybe already
 MIT
 ### Tested
 * CCL/1.11.5
-* SBCL/1.5.7
-
+* SBCL/1.5.8
+* ECL/16.1.3
+* CLISP/2.49
