@@ -1,7 +1,8 @@
 ; vim: ft=lisp et
 (in-package :asdf)
+
 (defsystem :resignal-bind
-  :version "0.0.5"
+  :version "0.0.6"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
@@ -16,7 +17,7 @@
 ;;; These forms below are added by JINGOH.GENERATOR.
 ;; Ensure in ASDF for pretty printings.
 (in-package :asdf)
-;; Enable testing via (asdf:test-system :system-name).
+;; Enable testing via (asdf:test-system "resignal-bind").
 (defmethod component-depends-on
            ((o test-op) (c (eql (find-system "resignal-bind"))))
   (append (call-next-method) '((test-op "resignal-bind.test"))))
@@ -39,26 +40,10 @@
     (let ((args (jingoh.args keys)))
       (declare (special args))
       (call-next-method))))
-;; Documentation importer.
+;; Enable importing spec documentations.
 (let ((system (find-system "jingoh.documentizer" nil)))
   (when (and system (not (featurep :clisp)))
     (load-system system)
-    (defmethod operate :around
-               ((o load-op) (c (eql (find-system "resignal-bind"))) &key)
-      (let* ((seen nil)
-             (*default-pathname-defaults*
-              (merge-pathnames "spec/" (system-source-directory c)))
-             (*macroexpand-hook*
-              (let ((outer-hook *macroexpand-hook*))
-                (lambda (expander form env)
-                  (if (not (typep form '(cons (eql defpackage) *)))
-                      (funcall outer-hook expander form env)
-                      (if (find (cadr form) seen :test #'string=)
-                          (funcall outer-hook expander form env)
-                          (progn
-                           (push (cadr form) seen)
-                           `(progn
-                             ,form
-                             ,@(symbol-call :jingoh.documentizer :importer
-                                            form)))))))))
-        (call-next-method)))))
+    (defmethod perform :after
+               ((o load-op) (c (eql (find-system "resignal-bind"))))
+      (symbol-call :jingoh.documentizer :import c))))
