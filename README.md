@@ -1,4 +1,4 @@
-# RESIGNAL-BIND - Tiny signal capturing facility
+# RESIGNAL-BIND 0.0.7
 
 ### Current lisp world
 Condition system is very strong.
@@ -79,8 +79,9 @@ ENSTRINGS: Accepts only proper list, but (1 2 . 3)
 Maybe already
 ### License
 MIT
+
 ### Tested
 * CCL/1.11.5
-* SBCL/1.5.8
+* SBCL/2.0.0
 * ECL/16.1.3
 * CLISP/2.49
