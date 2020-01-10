@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :resignal-bind
-  :version "0.0.6"
+  :version "0.0.7"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
@@ -46,4 +46,5 @@
     (load-system system)
     (defmethod perform :after
                ((o load-op) (c (eql (find-system "resignal-bind"))))
-      (symbol-call :jingoh.documentizer :import c))))
+      (with-muffled-conditions(*uninteresting-conditions*)
+        (symbol-call :jingoh.documentizer :import c)))))

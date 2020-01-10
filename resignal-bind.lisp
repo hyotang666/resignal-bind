@@ -14,42 +14,42 @@ HANDLER-CASE can not keep control flow.
   (if(null binds)
     `(PROGN ,@body)
     (let((tag (gensym "TAG"))
-	 (var (gensym "NEW-CONDITION")))
+         (var (gensym "NEW-CONDITION")))
       `(PROG(,var)
-	 (HANDLER-BIND,(loop :for bind :in binds
-			     :collect (bind-form bind tag var))
-	   (RETURN(PROGN ,@body))) ; without signaling, return it.
-	 ,tag
-	 (ERROR ,var))))) ; when signaling, resignal new condition.
+         (HANDLER-BIND,(loop :for bind :in binds
+                             :collect (bind-form bind tag var))
+           (RETURN(PROGN ,@body))) ; without signaling, return it.
+         ,tag
+         (ERROR ,var))))) ; when signaling, resignal new condition.
 
 (defun bind-form(bind tag var)
   (destructuring-bind(old (&optional condition) new . args)bind
     (let((condition(or condition
-		       (gensym"CONDITION")))
-	 (gnew (gensym"NEW")))
+                       (gensym"CONDITION")))
+         (gnew (gensym"NEW")))
       (check-error old)
       `(,old(LAMBDA(,condition)
-	      (LET((,gnew ,new))
-		,@(if(not(subtypep old 'warning))
-		    ;; old is ERROR or CONDITION.
-		    `((CHECK-ERROR ,gnew)
-		      (SETF ,var (INHERIT-CONDITION ,condition ,gnew ,@args))
-		      (GO ,tag))
-		    ;; old is WARNING.
-		    `((IF(NOT(PROGN (CHECK-ERROR ,gnew)
-				    (SUBTYPEP ,gnew 'WARNING)))
-			;; to be ERROR or CONDITION.
-			(PROGN (SETF ,var (INHERIT-CONDITION ,condition ,gnew ,@args))
-			       (GO ,tag))
-			;; to be WARNING.
-			(PROGN (WARN(INHERIT-CONDITION ,condition ,gnew ,@args))
-			       (WHEN(FIND-RESTART 'MUFFLE-WARNING ,condition)
-				 (MUFFLE-WARNING ,condition))))))))))))
+              (LET((,gnew ,new))
+                ,@(if(not(subtypep old 'warning))
+                    ;; old is ERROR or CONDITION.
+                    `((CHECK-ERROR ,gnew)
+                      (SETF ,var (INHERIT-CONDITION ,condition ,gnew ,@args))
+                      (GO ,tag))
+                    ;; old is WARNING.
+                    `((IF(NOT(PROGN (CHECK-ERROR ,gnew)
+                                    (SUBTYPEP ,gnew 'WARNING)))
+                        ;; to be ERROR or CONDITION.
+                        (PROGN (SETF ,var (INHERIT-CONDITION ,condition ,gnew ,@args))
+                               (GO ,tag))
+                        ;; to be WARNING.
+                        (PROGN (WARN(INHERIT-CONDITION ,condition ,gnew ,@args))
+                               (WHEN(FIND-RESTART 'MUFFLE-WARNING ,condition)
+                                 (MUFFLE-WARNING ,condition))))))))))))
 
 (define-condition unknown-condition(program-error type-error) ()
   (:report(lambda(c *standard-output*)
-	    (format t "~S: Unknown condition specified. ~S~%Typo?~:[~; or defined later?~]"
-		    'resignal-bind (type-error-datum c)*compile-file-pathname*))))
+            (format t "~S: Unknown condition specified. ~S~%Typo?~:[~; or defined later?~]"
+                    'resignal-bind (type-error-datum c)*compile-file-pathname*))))
 
 (defun check-error(condition)
   (handler-case(typep '#:dummy condition)
@@ -57,15 +57,15 @@ HANDLER-CASE can not keep control flow.
 
 (defun inherit-condition(condition tobe &rest args)
   (loop :with instance = (make-condition tobe)
-	:with args = (append args (slot-status condition))
-	:for slot :in (closer-mop:class-slots(class-of instance))
-	:do (setf(slot-value instance (closer-mop:slot-definition-name slot))
-	      (getf args (car(closer-mop:slot-definition-initargs slot))))
-	:finally (return instance)))
+        :with args = (append args (slot-status condition))
+        :for slot :in (closer-mop:class-slots(class-of instance))
+        :do (setf(slot-value instance (closer-mop:slot-definition-name slot))
+              (getf args (car(closer-mop:slot-definition-initargs slot))))
+        :finally (return instance)))
 
 (defun slot-status(instance)
   (loop :for slot :in (closer-mop:class-slots(class-of instance))
-	:for slot-name = (closer-mop:slot-definition-name slot)
-	:when (slot-boundp instance slot-name)
-	:collect(car(closer-mop:slot-definition-initargs slot))
-	:and :collect(slot-value instance slot-name)))
+        :for slot-name = (closer-mop:slot-definition-name slot)
+        :when (slot-boundp instance slot-name)
+        :collect(car(closer-mop:slot-definition-initargs slot))
+        :and :collect(slot-value instance slot-name)))
