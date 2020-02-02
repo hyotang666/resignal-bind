@@ -69,3 +69,22 @@ HANDLER-CASE can not keep control flow.
         :when (slot-boundp instance slot-name)
         :collect(car(closer-mop:slot-definition-initargs slot))
         :and :collect(slot-value instance slot-name)))
+
+(defun pprint-resignal-bind(stream exp &rest noise)
+  (declare(ignore noise))
+  (pprint-logical-block(stream exp :prefix "(" :suffix ")")
+    (write (pprint-pop) :stream stream) ; operator
+    (pprint-exit-if-list-exhausted)
+    (write-char #\space stream)
+    (pprint-indent :block 3 stream)
+    (pprint-newline :fill stream)
+    (format stream "~:<~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I~:@_~@{~W~^ ~:_~}~:>~:>"
+            (pprint-pop)) ; binds
+    (pprint-indent :block 1 stream)
+    (pprint-exit-if-list-exhausted)
+    (pprint-newline :mandatory stream)
+    (loop (pprint-exit-if-list-exhausted)
+          (write-char #\space stream)
+          (write (pprint-pop):stream stream))))
+
+(set-pprint-dispatch '(cons(member resignal-bind)) 'pprint-resignal-bind)

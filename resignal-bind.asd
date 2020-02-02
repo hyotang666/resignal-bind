@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :resignal-bind
-  :version "0.0.7"
+  :version "0.1.0"
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
