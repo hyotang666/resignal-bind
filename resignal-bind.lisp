@@ -85,13 +85,13 @@ HANDLER-CASE can not keep control flow.
     (pprint-exit-if-list-exhausted)
     (write-char #\Space stream)
     (pprint-indent :block 3 stream)
-    (pprint-newline :fill stream)
+    (pprint-newline :miser stream)
     (let ((bind (pprint-pop)))
       (cond ((atom bind) (format stream "~:S" bind))
             ((some #'atom bind) (write bind :stream stream))
             (t
              (format stream
-                     "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I~:@_~@{~W~^ ~:_~}~:>~}~:>"
+                     "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I ~_~@{~W~^ ~:_~W~^ ~_~}~:>~}~:>"
                      bind))))
     (pprint-indent :block 0 stream)
     (pprint-exit-if-list-exhausted)

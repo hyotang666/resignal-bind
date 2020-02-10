@@ -215,3 +215,13 @@ WARNING "
 
 #?(pprint-resignal-bind nil '(resignal-bind ((a nil))))
 :outputs "(RESIGNAL-BIND ((A ())))"
+
+#?(pprint-resignal-bind nil '(RESIGNAL-BIND((ERROR()'SIMPLE-ERROR
+                                              :FORMAT-CONTROL "Missing initform.~%~S"
+                                              :FORMAT-ARGUMENTS(LIST SLOT hoge)))
+                               form))
+:outputs
+"(RESIGNAL-BIND ((ERROR () 'SIMPLE-ERROR
+                  :FORMAT-CONTROL \"Missing initform.~%~S\"
+                  :FORMAT-ARGUMENTS (LIST SLOT HOGE)))
+  FORM)"
