@@ -1,4 +1,5 @@
-(defpackage :resignal-bind.spec(:use :cl :jingoh :resignal-bind))
+(defpackage :resignal-bind.spec(:use :cl :jingoh :resignal-bind)
+  (:import-from #:resignal-bind #:pprint-resignal-bind))
 (in-package :resignal-bind.spec)
 (setup :resignal-bind)
 
@@ -160,3 +161,57 @@ WARNING "
     (error(c)(princ c)))
 :outputs "1-2" ; in this case, format-control is inherited.
                ; But format-arguments is superseded.
+
+(requirements-about PPRINT-RESIGNAL-BIND :doc-type function
+                    :around (let((*print-pretty* t))
+                              (call-body)))
+
+;;;; Description:
+
+#+syntax
+(PPRINT-RESIGNAL-BIND stream exp &rest noise) ; => result
+
+;;;; Arguments and Values:
+
+; stream := 
+
+; exp := 
+
+; noise := 
+
+; result := 
+
+;;;; Affected By:
+
+;;;; Side-Effects:
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+;;;; Tests:
+#?(pprint-resignal-bind nil '(resignal-bind))
+:outputs "(RESIGNAL-BIND)"
+
+#?(pprint-resignal-bind nil '(resignal-bind nil))
+:outputs "(RESIGNAL-BIND ())"
+
+#?(pprint-resignal-bind nil '(resignal-bind nil nil))
+:outputs "(RESIGNAL-BIND ()
+  NIL)"
+
+#?(pprint-resignal-bind nil '(resignal-bind nil hoge))
+:outputs "(RESIGNAL-BIND ()
+  HOGE)"
+
+#?(pprint-resignal-bind nil '(resignal-bind (a)))
+:outputs "(RESIGNAL-BIND (A))"
+
+#?(pprint-resignal-bind nil '(resignal-bind (nil)))
+:outputs "(RESIGNAL-BIND (NIL))"
+
+#?(pprint-resignal-bind nil '(resignal-bind ((nil))))
+:outputs "(RESIGNAL-BIND ((NIL)))"
+
+#?(pprint-resignal-bind nil '(resignal-bind ((a nil))))
+:outputs "(RESIGNAL-BIND ((A ())))"

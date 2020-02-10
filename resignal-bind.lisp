@@ -78,13 +78,23 @@ HANDLER-CASE can not keep control flow.
     (write-char #\space stream)
     (pprint-indent :block 3 stream)
     (pprint-newline :fill stream)
-    (format stream "~:<~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I~:@_~@{~W~^ ~:_~}~:>~:>"
-            (pprint-pop)) ; binds
-    (pprint-indent :block 1 stream)
+    (let((bind(pprint-pop)))
+      (cond
+        ((atom bind)
+         (format stream "~:S" bind))
+        ((some #'atom bind)
+         (write bind :stream stream))
+        (t
+          (format stream "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I~:@_~@{~W~^ ~:_~}~:>~}~:>"
+                  bind))))
+    (pprint-indent :block 0 stream)
     (pprint-exit-if-list-exhausted)
     (pprint-newline :mandatory stream)
     (loop (pprint-exit-if-list-exhausted)
           (write-char #\space stream)
           (write (pprint-pop):stream stream))))
 
+;;; [CLISP say](https://clisp.sourceforge.io/impnotes.html#clpp)
+;;; > The Lisp Pretty Printer implementation is not perfect yet.
+#-clisp
 (set-pprint-dispatch '(cons(member resignal-bind)) 'pprint-resignal-bind)
