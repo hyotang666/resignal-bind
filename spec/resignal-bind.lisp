@@ -89,14 +89,6 @@ ERROR "
     (signal 'error))
 :invokes-debugger program-error
 
-#?(with-output-to-string (*error-output*)
-    (resignal-bind ((warning nil 'warning))
-      (signal 'warning)))
-:satisfies (lambda ($result)
-	     (& (stringp $result)
-		(< 0 (length $result))))
-, :ignore-signals warning
-
 ; Purpose is making better error message.
 #?(handler-case
       (resignal-bind ((error nil 'simple-error :format-control "foo"))
