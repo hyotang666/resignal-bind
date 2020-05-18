@@ -47,13 +47,6 @@ ERROR "
 :invokes-debugger NOT
 , :ignore-signals warning
 
-#?(with-output-to-string (*error-output*)
-     (warn "foo"))
-:satisfies (lambda ($result)
-	     (& (stringp $result)
-		(< 0 (length $result))))
-,:ignore-signals warning
-
 ;; NOTE!
 ; code below is causes TYPE-ERROR.
 ; Because CL:WARN accept only subtype of WARNING.
