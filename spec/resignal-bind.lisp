@@ -25,18 +25,18 @@
 
 ;;; Condition handler
 ; When handler is found call it.
-#?(handler-bind ((warning (lambda (c) (print (type-of c)))))
-  (signal 'warning))
+#?(handler-bind ((error (lambda (c) (print (type-of c)))))
+  (signal 'error))
 :outputs "
-WARNING "
-, :ignore-signals warning
+ERROR "
+,:ignore-signals error
 
 ; When control flow is not changed, nested some handlers are called.
-#?(handler-bind ((warning (lambda (c) (declare (ignore c)) (princ :outer))))
-  (handler-bind ((warning (lambda (c) (declare (ignore c)) (princ :inner))))
-    (signal 'warning)))
+#?(handler-bind ((error (lambda (c) (declare (ignore c)) (princ :outer))))
+  (handler-bind ((error (lambda (c) (declare (ignore c)) (princ :inner))))
+    (signal 'error)))
 :outputs "INNEROUTER"
-, :ignore-signals warning
+, :ignore-signals error
 
 ;;; CL:WARN
 ; searches handler then print message on *ERROR-OUTPUT* then return nil.
