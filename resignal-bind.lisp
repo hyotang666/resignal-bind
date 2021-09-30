@@ -14,45 +14,51 @@ HANDLER-CASE can not keep control flow.
 |#
 
 (defmacro resignal-bind (binds &body body)
+  (declare (type list binds))
   (if (null binds)
       `(progn ,@body)
-      (let ((tag (gensym "TAG")) (var (gensym "NEW-CONDITION")))
+      (let ((tag (gensym "TAG"))
+            (var (gensym "NEW-CONDITION"))
+            (handlers
+             (loop :repeat (length binds)
+                   :collect (gensym "HANDLER"))))
         `(prog (,var)
-           (handler-bind ,(loop :for bind :in binds
-                                :collect (bind-form bind tag var))
-             (return (progn ,@body))) ; without signaling, return it.
+           (flet ,(loop :for bind :in binds
+                        :for ?handler in handlers
+                        :collect (<handler-def> bind ?handler var tag))
+             (declare (dynamic-extent #',@handlers)) ; SBCL needs.
+             (handler-bind ,(loop :for bind :in binds
+                                  :for ?handler :in handlers
+                                  :collect `(,(car bind) #',?handler))
+               (return (progn ,@body)))) ; without signaling, return it.
           ,tag
            (error ,var))))) ; when signaling, resignal new condition.
 
-(defun bind-form (bind tag var)
+(defun <handler-def> (bind ?handler var tag)
   (destructuring-bind
       (old (&optional condition) new . args)
       bind
     (let ((condition (or condition (gensym "CONDITION"))) (gnew (gensym "NEW")))
       (check-error old)
-      `(,old
-        (lambda (,condition)
-          (let ((,gnew ,new))
-            ,@(if (not (subtypep old 'warning))
-                  ;; old is ERROR or CONDITION.
-                  `((check-error ,gnew)
-                    (setf ,var (inherit-condition ,condition ,gnew ,@args))
-                    (go ,tag))
-                  ;; old is WARNING.
-                  `((if (not
-                          (progn
-                           (check-error ,gnew)
-                           (subtypep ,gnew 'warning)))
-                        ;; to be ERROR or CONDITION.
-                        (progn
-                         (setf ,var
-                                 (inherit-condition ,condition ,gnew ,@args))
-                         (go ,tag))
-                        ;; to be WARNING.
-                        (progn
-                         (warn (inherit-condition ,condition ,gnew ,@args))
-                         (when (find-restart 'muffle-warning ,condition)
-                           (muffle-warning ,condition))))))))))))
+      `(,?handler (,condition) (declare (optimize (safety 0)))
+        (let ((,gnew ,new))
+          ,@(if (not (subtypep old 'warning))
+                ;; old is ERROR or CONDITION.
+                `((check-error ,gnew)
+                  (setf ,var (inherit-condition ,condition ,gnew ,@args))
+                  (go ,tag))
+                ;; old is WARNING.
+                `((if (not
+                        (progn (check-error ,gnew) (subtypep ,gnew 'warning)))
+                      ;; to be ERROR or CONDITION.
+                      (progn
+                       (setf ,var (inherit-condition ,condition ,gnew ,@args))
+                       (go ,tag))
+                      ;; to be WARNING.
+                      (progn
+                       (warn (inherit-condition ,condition ,gnew ,@args))
+                       (when (find-restart 'muffle-warning ,condition)
+                         (muffle-warning ,condition)))))))))))
 
 (define-condition unknown-condition (program-error type-error)
   ()
