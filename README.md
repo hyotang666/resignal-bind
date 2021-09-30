@@ -1,13 +1,12 @@
 # RESIGNAL-BIND 0.0.7
 
-### Current lisp world
-Condition system is very strong.
+## Alternatives and differences
 
-### Issues
-Although error message is not user friendly.
+|     | [more-conditions] | resignal-bind |
+| --- | ----------------- | ------------- |
+| API | 38 symbols        | 1 symbol      |
 
-### Proposal
-resignal-bind captures condition in order to make more better error message.
+[more-conditions]: https://github.com/scymtym/more-conditions
 
 ## Usage
 
