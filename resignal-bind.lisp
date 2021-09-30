@@ -5,7 +5,7 @@
 
 (in-package :resignal-bind)
 
- #|
+#|
 Don't use HANDLER-CASE.
 Consider about when capturing warning then resignal new warning.
 HANDLER-CASE can not keep control flow.
@@ -38,7 +38,9 @@ HANDLER-CASE can not keep control flow.
                     (go ,tag))
                   ;; old is WARNING.
                   `((if (not
-                         (progn (check-error ,gnew) (subtypep ,gnew 'warning)))
+                          (progn
+                           (check-error ,gnew)
+                           (subtypep ,gnew 'warning)))
                         ;; to be ERROR or CONDITION.
                         (progn
                          (setf ,var
@@ -50,7 +52,8 @@ HANDLER-CASE can not keep control flow.
                          (when (find-restart 'muffle-warning ,condition)
                            (muffle-warning ,condition))))))))))))
 
-(define-condition unknown-condition (program-error type-error) ()
+(define-condition unknown-condition (program-error type-error)
+  ()
   (:report
    (lambda (c *standard-output*)
      (format t
