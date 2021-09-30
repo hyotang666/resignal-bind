@@ -5,6 +5,8 @@
 
 (in-package :resignal-bind)
 
+(declaim (optimize speed))
+
 #|
 Don't use HANDLER-CASE.
 Consider about when capturing warning then resignal new warning.
@@ -61,7 +63,10 @@ HANDLER-CASE can not keep control flow.
              'resignal-bind (type-error-datum c) *compile-file-pathname*))))
 
 (defun check-error (condition)
-  (handler-case (typep '#:dummy condition)
+  (handler-case
+      (locally ; Due to type is known in runtime.
+       (declare (optimize (speed 1)))
+       (typep '#:dummy condition))
     (error ()
       (error 'unknown-condition :datum condition))))
 
@@ -90,12 +95,15 @@ HANDLER-CASE can not keep control flow.
     (pprint-indent :block 3 stream)
     (pprint-newline :miser stream)
     (let ((bind (pprint-pop)))
-      (cond ((atom bind) (format stream "~:S" bind))
+      (cond ((atom bind) (funcall (formatter "~:S") stream bind))
             ((some #'atom bind) (write bind :stream stream))
             (t
-             (format stream
-                     "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I ~_~@{~W~^ ~:_~W~^ ~_~}~:>~}~:>"
-                     bind))))
+             (funcall
+               (locally ; Out of responds due to ~:*.
+                (declare (optimize (speed 1)))
+                (formatter
+                 "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I ~_~@{~W~^ ~:_~W~^ ~_~}~:>~}~:>"))
+               stream bind))))
     (pprint-indent :block 0 stream)
     (pprint-exit-if-list-exhausted)
     (pprint-newline :mandatory stream)
