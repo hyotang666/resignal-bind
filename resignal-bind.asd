@@ -6,7 +6,9 @@
   :description "Tiny signal capturing facility."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "README.md"))
-  :author "Shinichi Sato"
+  :author "SATO Shinichi"
+  :source-control (:git "git@github.com:hyotang666/resignal-bind")
+  :bug-tracker "https://github.com/hyotang666/resignal-bind/issues"
   :licence "MIT"
   :depends-on
   (
