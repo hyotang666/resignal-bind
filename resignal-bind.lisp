@@ -26,7 +26,7 @@ HANDLER-CASE can not keep control flow.
            (flet ,(loop :for bind :in binds
                         :for ?handler in handlers
                         :collect (<handler-def> bind ?handler var tag))
-             (declare (dynamic-extent #',@handlers)) ; SBCL needs.
+             (declare (dynamic-extent (function ,@handlers))) ; SBCL needs.
              (handler-bind ,(loop :for bind :in binds
                                   :for ?handler :in handlers
                                   :collect `(,(car bind) #',?handler))
