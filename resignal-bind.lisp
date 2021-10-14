@@ -105,10 +105,8 @@ HANDLER-CASE can not keep control flow.
             ((some #'atom bind) (write bind :stream stream))
             (t
              (funcall
-               (locally ; Out of responds due to ~:*.
-                (declare (optimize (speed 1)))
-                (formatter
-                 "~:<~@{~:<~^~W~^~3I ~@_~:[()~;~:*~W~]~^ ~W~^~1I ~_~@{~W~^ ~:_~W~^ ~_~}~:>~}~:>"))
+               (formatter
+                "~:<~@{~:<~^~W~^~3I ~@_~:<~^~@{~W~^ ~}~:>~^ ~W~^~1I ~_~@{~W~^ ~:_~W~^ ~_~}~:>~}~:>")
                stream bind))))
     (pprint-indent :block 0 stream)
     (pprint-exit-if-list-exhausted)
