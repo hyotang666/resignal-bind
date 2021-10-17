@@ -93,9 +93,9 @@ ERROR "
 #?(handler-case
       (resignal-bind ((error nil 'simple-error :format-control "foo"))
         (error "bar"))
-    (error (c)
-      (princ c)))
-:outputs "foo"
+    (error (c) c))
+:satisfies (lambda (c)
+	     (& (equal (simple-condition-format-control c) "foo")))
 
 ; it is invalid that downgrade error to warning,
 ; but upgrade warning to error.
@@ -130,9 +130,10 @@ ERROR "
                                          (simple-condition-format-control c)
                                          " added string")))
       (error "error"))
-    (error (c)
-      (princ c)))
-:outputs "error added string"
+    (error (c) c))
+:satisfies (lambda (condition)
+	     (& (equal (simple-condition-format-control condition)
+		       "error added string")))
 
 ; Resignal-bind support status inheritance.
 ; When new condition has same slot with old condition,
@@ -140,10 +141,14 @@ ERROR "
 #?(handler-case
       (resignal-bind ((error nil 'simple-error :format-arguments '(1 2)))
         (error "~S-~S" :a :b))
-    (error (c)
-      (princ c)))
-:outputs "1-2" ; in this case, format-control is inherited.
-               ; But format-arguments is superseded.
+    (error (c) c))
+:satisfies (lambda (condition)
+	     ;; in this case, format-control is inherited.
+	     ;; But format-arguments is superseded.
+	     (& (equal "1-2"
+		       (apply #'format nil
+			      (simple-condition-format-control condition)
+			      (simple-condition-format-arguments condition)))))
 
 (requirements-about PPRINT-RESIGNAL-BIND :doc-type function
                     :around (let((*print-pretty* t))
