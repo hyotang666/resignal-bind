@@ -25,16 +25,16 @@
 
 ;;; Condition handler
 ; When handler is found call it.
-#?(handler-bind ((error (lambda (c) (print (type-of c)))))
-  (signal 'error))
+#?(handler-case (signal 'error)
+    (error (c) (print (type-of c))))
 :outputs "
 ERROR "
 ,:ignore-signals error
 
 ; When control flow is not changed, nested some handlers are called.
-#?(handler-bind ((error (lambda (c) (declare (ignore c)) (princ :outer))))
-  (handler-bind ((error (lambda (c) (declare (ignore c)) (princ :inner))))
-    (signal 'error)))
+#?(handler-case (handler-bind ((error (lambda (c) (declare (ignore c)) (princ :inner))))
+		  (signal 'error))
+    (error (c) (declare (ignore c)) (princ :outer)))
 :outputs "INNEROUTER"
 , :ignore-signals error
 
