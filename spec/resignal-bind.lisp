@@ -133,7 +133,8 @@ ERROR "
     (error (c) c))
 :satisfies (lambda (condition)
 	     (& (equal (simple-condition-format-control condition)
-		       "error added string")))
+		       #.(or #+allegro "~1@<error~:@> added string"
+			     "error added string"))))
 
 ; Resignal-bind support status inheritance.
 ; When new condition has same slot with old condition,
