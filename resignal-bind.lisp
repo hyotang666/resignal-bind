@@ -79,10 +79,15 @@ HANDLER-CASE can not keep control flow.
 (defun inherit-condition (condition tobe &rest args)
   (loop :with instance = (make-condition tobe)
         :with args = (append args (slot-status condition))
+        :with missing = '#:missing
         :for slot :in (closer-mop:class-slots (class-of instance))
-        :do (setf (slot-value instance (closer-mop:slot-definition-name slot))
-                    (getf args
-                          (car (closer-mop:slot-definition-initargs slot))))
+        :for inherit
+             = (getf args (car (closer-mop:slot-definition-initargs slot))
+                     missing)
+        :unless (eq missing inherit)
+          :do (setf (slot-value instance
+                                (closer-mop:slot-definition-name slot))
+                      inherit)
         :finally (return instance)))
 
 (defun slot-status (instance)
