@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :resignal-bind.test
- :version "0.1.8"
+ :version "0.1.9"
  :depends-on (:jingoh "resignal-bind")
  :components ((:file "resignal-bind")) :perform
  (test-op (o c)

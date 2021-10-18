@@ -8,7 +8,10 @@
 ;;;; Description:
 ;;; CL:SIGNAL
 ; do only signaling.
+#-abcl
 #?(signal 'warning) :signals warning
+#+abcl ; ABCL try to muffle-warning.
+#?(signal 'warning) :signals control-error
 #?(signal 'error) :signals error
 ; CLHS say "If the condition is not handled, signal returns nil."
 #-ecl
@@ -39,8 +42,12 @@ ERROR "
 , :ignore-signals error
 
 ;;; CL:WARN
+#-abcl
 ; searches handler then print message on *ERROR-OUTPUT* then return nil.
 #?(warn 'warning) :signals warning
+#+abcl ; ABCL muffles.
+#?(warn 'warning) => NIL
+,:ignore-signals warning
 
 ; does not invoke debugger.
 #?(warn "foo")
@@ -59,8 +66,14 @@ ERROR "
 
 ;; NOTE!
 ; code below is signalling WARNING, then invoke debugger.
+#-abcl
 #?(error 'warning) :signals warning
+#+abcl ; ABCL try to muffle warning.
+#?(error 'warning) :signals control-error
+#-abcl
 #?(error 'warning) :invokes-debugger warning
+#+abcl ; ABCL try to muffle warning.
+#?(error 'warning) :signals control-error
 
 ;;; CL:HANDLER-BIND
 ;; NOTE!
@@ -102,9 +115,13 @@ ERROR "
 #?(resignal-bind ((warning nil 'program-error)) (warn 'warning))
 :invokes-debugger program-error
 
+#-abcl
 #?(resignal-bind ((error nil 'warning)) (error 'error))
 :invokes-debugger warning
 , :ignore-signals warning
+#+abcl ; ABCL try to muffle warning.
+#?(resignal-bind ((error nil 'warning)) (error 'error))
+:signals control-error
 
 ; same with CL:HANDLER-BIND, without signaling, nothing to do.
 #?(resignal-bind ((error nil 'simple-error :format-control "why?"))
