@@ -81,7 +81,21 @@ Maybe already
 MIT
 
 ### Tested
-* CCL/1.11.5
-* SBCL/2.0.0
+* SBCL/2.1.7
+* CCL/1.12.1
+* CLISP/2.49 ; Failed.
 * ECL/16.1.3
-* CLISP/2.49
+* Allegro/10.1
+* CMUCL/21D
+* ABCL/1.8.0 ; Failed.
+
+### Known issues.
+#### CLISP
+[CLISP say](https://clisp.sourceforge.io/impnotes.html#clpp)
+
+> The Lisp Pretty Printer implementation is not perfect yet.
+
+Works fine, but S-expression printed as not pretty.
+
+#### ABCL
+Works fine, but S-expression printed as not pretty.
